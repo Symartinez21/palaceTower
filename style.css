@@ -16,6 +16,8 @@ canvas {
 
 h2 {
       text-decoration-thickness: auto;
+      font-style: italic;
+      text-transform: uppercase;
       color: #3000b5;
       font-size: 50px;
       font-family: 'Patrick Hand', cursive, 'Courier New';
