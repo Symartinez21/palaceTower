@@ -11,6 +11,7 @@ import { PointerLockControls } from "./PointerLockControls.js";
 
 import { GLTFLoader } from './GLTFLoader.js';
 
+
 // Establish variables
 let camera, scene, renderer, controls;
 
@@ -22,6 +23,10 @@ let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
 let canJump = false;
+let flyMode = false;
+
+let lastSpacePressTime = 0;
+
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
@@ -79,6 +84,11 @@ function init() {
   // Add controls to scene
   scene.add(controls.getObject());
 
+  console.log('If you found this text you\'re a nerd *<:o(')
+  const makeFunOfArrowKeys = function() {
+    console.log('I can\'t believe you used the arrow keys you noob');
+  };
+
   // Define key controls for WASD controls
   const onKeyDown = function(event) {
     switch (event.code) {
@@ -103,32 +113,59 @@ function init() {
         break;
 
       case "Space":
-        if (canJump === true) velocity.y += 350;
+        if (canJump === true && !flyMode) velocity.y = 350;
+        if (flyMode) velocity.y = 350;
         canJump = false;
         break;
+
+      case "ControlLeft":
+        if (flyMode) velocity.y = -350;
+        break;
+
     }
   };
 
+
   const onKeyUp = function(event) {
     switch (event.code) {
-      case "ArrowUp":
+      case "ArrowUp": makeFunOfArrowKeys();
       case "KeyW":
         moveForward = false;
         break;
-
-      case "ArrowLeft":
+      case "ArrowLeft": makeFunOfArrowKeys();
       case "KeyA":
         moveLeft = false;
         break;
 
-      case "ArrowDown":
+      case "ArrowDown": makeFunOfArrowKeys();
       case "KeyS":
         moveBackward = false;
         break;
 
-      case "ArrowRight":
+      case "ArrowRight": makeFunOfArrowKeys();
       case "KeyD":
         moveRight = false;
+        break;
+
+      case "Space":
+        // if the last time space was pressed wasn't too long ago.
+        const timeNow = performance.now();
+        const maxTimePassed = 500;  // 500 ms or 1/2 a second
+        if (timeNow - lastSpacePressTime < maxTimePassed) {
+          console.log('Double press!!!');
+          // Toggle flyMode between true and false
+          flyMode = !flyMode;
+          console.log('flyMode: ' + (flyMode ? 'ON' : 'OFF'));
+          velocity.y = 0;
+        }
+        lastSpacePressTime = timeNow;
+
+        // Stop flying up (if in flyMode) when space is released
+        if (flyMode) velocity.y = 0;
+        break;
+
+      case "ControlLeft":
+        if (flyMode) velocity.y = 0;
         break;
     }
   };
@@ -156,7 +193,7 @@ function init() {
 
 
   var mesh;
-  var mesh2;
+  // var mesh2;
   const loader = new GLTFLoader();
 
   loader.load( './assets/tower.glb',
@@ -172,7 +209,7 @@ function init() {
      mesh = gltf.scene;
      mesh.position.set(0, 0, 0);
      mesh.rotation.set(0, 0, 0);
-     mesh.scale.set(1, 2 , 1);
+     mesh.scale.set(1, 1 , 1);
      // Add model to scene
      scene.add(mesh);
 
@@ -182,28 +219,28 @@ function init() {
 
   } );
 
-  const loader2 = new GLTFLoader().load(
-    "./assets/wardrobe.glb",
-    function(gltf) {
-      // Scan loaded model for mesh and apply defined material if mesh is present
-      gltf.scene.traverse(function(child) {
-        if (child.isMesh) {
-          //child.material = newMaterial;
-        }
-      });
-      // set position and scale
-      mesh2 = gltf.scene;
-      mesh2.position.set(1, 0, 0);
-      mesh2.rotation.set(0, 0, 0);
-      mesh2.scale.set(1, 1, 1);
-      // Add model to scene
-      scene.add(mesh2);
-    },
-    undefined,
-    function(error) {
-      console.error(error);
-    }
-  );
+  // const loader2 = new GLTFLoader().load(
+  //   "./assets/wardrobe.glb",
+  //   function(gltf) {
+  //     // Scan loaded model for mesh and apply defined material if mesh is present
+  //     gltf.scene.traverse(function(child) {
+  //       if (child.isMesh) {
+  //         //child.material = newMaterial;
+  //       }
+  //     });
+  //     // set position and scale
+  //     mesh2 = gltf.scene;
+  //     mesh2.position.set(1, 0, 0);
+  //     mesh2.rotation.set(0, 0, 0);
+  //     mesh2.scale.set(0, 0, 0);
+  //     // Add model to scene
+  //     scene.add(mesh2);
+  //   },
+  //   undefined,
+  //   function(error) {
+  //     console.error(error);
+  //   }
+  // );
 
   // Define Rendered and html document placement
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -238,13 +275,15 @@ function animate() {
 
     const onObject = intersections.length > 0;
 
-
     const delta = (time - prevTime) / 1000;
 
     velocity.x -= velocity.x * 10.0 * delta;
     velocity.z -= velocity.z * 10.0 * delta;
 
-    velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+    if (!flyMode) {
+      // Turn on gravity
+      velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+    }
 
     direction.z = Number(moveForward) - Number(moveBackward);
     direction.x = Number(moveRight) - Number(moveLeft);
@@ -253,7 +292,7 @@ function animate() {
     if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
     if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
 
-    if (onObject === true) {
+    if (onObject) {
       velocity.y = Math.max(0, velocity.y);
       canJump = true;
     }
