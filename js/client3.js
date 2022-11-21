@@ -118,7 +118,7 @@ function init() {
         canJump = false;
         break;
 
-      case "ControlLeft":
+      case "ShiftLeft":
         if (flyMode) velocity.y = -350;
         break;
 
@@ -164,7 +164,7 @@ function init() {
         if (flyMode) velocity.y = 0;
         break;
 
-      case "ControlLeft":
+      case "ShiftLeft":
         if (flyMode) velocity.y = 0;
         break;
     }
