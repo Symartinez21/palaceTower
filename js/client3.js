@@ -114,12 +114,12 @@ function init() {
 
       case "Space":
         if (canJump === true && !flyMode) velocity.y = 350;
-        if (flyMode) velocity.y = 350;
+        if (flyMode) velocity.y = 150;
         canJump = false;
         break;
 
       case "ShiftLeft":
-        if (flyMode) velocity.y = -350;
+        if (flyMode) velocity.y = -150;
         break;
 
     }
