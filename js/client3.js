@@ -194,9 +194,11 @@ function init() {
 
   var mesh;
   // var mesh2;
+  // var mesh3;
+
   const loader = new GLTFLoader();
 
-  loader.load( './assets/tower.glb',
+  loader.load( './assets/towerscene.glb',
    function ( gltf ) {
 
      gltf.scene.traverse(function(child) {
@@ -218,23 +220,47 @@ function init() {
   	console.error( error );
 
   } );
-
-  // const loader2 = new GLTFLoader().load(
-  //   "./assets/wardrobe.glb",
+  //
+  // const loader2 = new GLTFLoader();
+  // loader.load( './assets/clouds.glb',
   //   function(gltf) {
   //     // Scan loaded model for mesh and apply defined material if mesh is present
   //     gltf.scene.traverse(function(child) {
-  //       if (child.isMesh) {
+  //       if (child.isMesh2) {
   //         //child.material = newMaterial;
   //       }
   //     });
   //     // set position and scale
   //     mesh2 = gltf.scene;
-  //     mesh2.position.set(1, 0, 0);
+  //     mesh2.position.set(1, 10, 0);
   //     mesh2.rotation.set(0, 0, 0);
-  //     mesh2.scale.set(0, 0, 0);
+  //     mesh2.scale.set(10, 10, 10);
   //     // Add model to scene
   //     scene.add(mesh2);
+  //   },
+  //   undefined,
+  //   function(error) {
+  //     console.error(error);
+  //   }
+  // );
+  //
+  // const loader3 = new GLTFLoader();
+  // loader.load(
+  //   './assets/floatingplatform.glb',
+  //   function(gltf) {
+  //     // Scan loaded model for mesh and apply defined material if mesh is present
+  //     gltf.scene.traverse(function(child) {
+  //       if (child.isMesh3) {
+  //         //child.material = newMaterial;
+  //       }
+  //     });
+  //     // set position and scale
+  //     mesh3 = gltf.scene;
+  //     mesh3.position.set(25, 25, 0);
+  //     mesh3.rotation.set(0, 0, 0);
+  //     mesh3.scale.set(5, 5, 5);
+  //     // Add model to scene
+  //     scene.add(mesh3);
   //   },
   //   undefined,
   //   function(error) {
